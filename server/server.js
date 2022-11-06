@@ -14,11 +14,17 @@ const io = socket(httpServer, {
 io.on('connection', (socket) => {
     // socket.broadcast.emit("Hello", "world")
     socket.on("send-message", message => {
-        // io.emit("receive-message", message)
         socket.broadcast.emit("receive-message", message)
     })
-})
 
+    socket.on("joinRoom", roomName => {
+        socket.join(roomName)
+        io.to("Dari Gang").emit("K xa dari haru")
+    })
+
+    
+    
+})
 
 httpServer.listen(3000, () => {
     console.log('Server running on port 3000')
