@@ -1,0 +1,10 @@
+.container{
+    border: dashed;
+    border-color: red;
+    padding: 20px;
+    width: auto;
+}
+
+.container .login-container{
+    display: flexbox;
+}
