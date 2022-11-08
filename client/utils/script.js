@@ -1,25 +1,22 @@
 // const users = require('./users')
 
 const socket = io()
+
 const messageBox = document.querySelector('.chatAppMessage')
 const inputBox = document.querySelector('.inputBox')
-const clubBox = document.querySelector('.club')
+
+document.querySelector('.clearChatBox').addEventListener('click', (event)=> {
+    event.preventDefault();
+    messageBox.innerHTML = ""
+})
 
 document.querySelector(".chatroomSend").addEventListener('click', (event)=> {
     event.preventDefault();
     const message = inputBox.value;
-    const roomName = clubBox.value;
 
     displayMessage(message)      //displays message on the sender side
     
-    socket.emit("send-message", message, roomName)
-})
-
-clubBox.addEventListener('click', (event) => {
-    event.preventDefault()
-    let roomName = event.target.value;
-    if(roomName === "") return 
-    joinRoom(roomName)
+    socket.emit("send-message", message)
 })
 
 function joinRoom(roomName){
@@ -36,9 +33,9 @@ function displayMessage(text){
     document.querySelector('.inputBox').value = ""
 }
 
-socket.on("new-user", (user) => {
-    displayMessage(`Welcome ${user.username} to ${user.room}`)
-    console.log(user)
+socket.on("new-user", (username, room, cb) => {
+    displayMessage(`Welcome ${username} to ${room}`)
+    cb()
 })
 
 socket.on("receive-message", (message => {
@@ -48,4 +45,3 @@ socket.on("receive-message", (message => {
 socket.on("disconnect", () => {
     console.log("Disconnected")
 })
-
