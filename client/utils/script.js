@@ -10,7 +10,7 @@ document.querySelector('.clearChatBox').addEventListener('click', (event)=> {
     messageBox.innerHTML = ""
 })
 
-document.querySelector(".chatroomSend").addEventListener('click', (event)=> {
+document.querySelector(".chatRoomSend").addEventListener('click', (event)=> {
     event.preventDefault();
     const message = inputBox.value;
 
@@ -19,22 +19,48 @@ document.querySelector(".chatroomSend").addEventListener('click', (event)=> {
     socket.emit("send-message", message)
 })
 
-function joinRoom(roomName){
-    socket.emit("joinRoom", roomName, (args) => {
-        displayMessage(args)
-    })
-}
-
 function displayMessage(text){
     const message = document.createElement('p');
     message.textContent = text;
 
     messageBox.appendChild(message);
-    document.querySelector('.inputBox').value = ""
+    inputBox.value = ""
+}
+
+function displayChatBoxName(room){
+    const heading = document.createElement('p');
+    heading.textContent = room;
+
+    document.querySelector('.chatBoxName').appendChild(heading);
+}
+
+function displayUsersCount(usersCount){
+    document.querySelector('.users-count').textContent = usersCount
+}
+
+function displayRoomUsers(roomUsers){
+    const usersList = document.createElement('ul');
+    usersList.className = "list-users";
+    
+    roomUsers.forEach(user => {
+        const listItem = document.createElement('li');
+        listItem.innerHTML = user.username;
+        usersList.appendChild(listItem)
+    });
+
+    document.querySelector('.room-users').appendChild(usersList)
+}
+
+function displayPasswordError(message){
+    const errorMessage = document.createElement('p');
+    errorMessage.textContent = message;
+
+    document.querySelector('.errorBox').appendChild(errorMessage);
 }
 
 socket.on("new-user", (username, room, cb) => {
     displayMessage(`Welcome ${username} to ${room}`)
+    displayChatBoxName(room)
     cb()
 })
 
@@ -44,4 +70,16 @@ socket.on("receive-message", (message => {
 
 socket.on("disconnect", () => {
     console.log("Disconnected")
+})
+
+socket.on('currentRoomUsers', (usersCount) => {
+    displayUsersCount(usersCount)
+})
+
+socket.on('displayCurrentRoomUsers', (roomUsers) => {
+    displayRoomUsers(roomUsers)
+})
+
+socket.on('incorrect-password', errMsg => {
+    displayPasswordError(errMsg);
 })

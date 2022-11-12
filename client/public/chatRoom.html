@@ -4,27 +4,37 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- <link rel="stylesheet" href="./css/style.css"> -->
+    <link rel="stylesheet" href="./style.css">
     <title>GoreyDon Club</title>
     <script src = "./script.js" defer></script>
 </head>
 <body>
-    <div class = "chatApp">
-        
-        <div class = "chatAppMessage"></div>
+    <div class = "chat-container">
+        <div class = "chatApp">
+            <div class = "chatBoxName"></div>
 
-        <form class = "chatAppChatroom">
+            <div class = "chatAppMessage"></div>
 
-            <input 
-                type = "text" 
-                name = "message" 
-                placeholder="Enter message"
-                class = "inputBox"/>
+            <form class = "chatAppChatroom">
 
-            <button class = "chatroomSend">Send</button>
-            <button class = "clearChatBox">Clear</button>
+                <input 
+                    type = "text" 
+                    name = "message" 
+                    placeholder="Enter message"
+                    class = "inputBox"/>
 
-        </form>
+                <button class = "chatRoomSend">Send</button>
+                <button class = "clearChatBox">Clear</button>
+
+            </form>
+        </div>
+        <div class = "online-users">
+            <div class = "heading-box">
+                <p class = "room-heading">Online Users: </p>
+                <p class = "users-count">0</p>
+            </div>
+            <div class="room-users"></div>
+        </div>
     </div>
     <script src="https://cdn.socket.io/socket.io-3.0.1.min.js"></script>
     <scrip src="https://cdnjs.cloudflare.com/ajax/libs/qs/6.5.1/qs.min.js"></scrip>

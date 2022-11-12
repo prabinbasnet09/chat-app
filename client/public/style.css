@@ -2,9 +2,69 @@
     border: dashed;
     border-color: red;
     padding: 20px;
-    width: auto;
+    width: fit-content;
 }
 
 .container .login-container{
     display: flexbox;
+}
+
+.chat-container{
+    display: flex;
+}
+
+.chatApp{
+    width: fit-content;
+    border: solid;
+}
+
+.chatApp .chatBoxName{
+    border-bottom: solid;
+    text-align: center;
+    font-size: larger;
+    font-weight: 600;
+}
+
+.chatApp .chatAppMessage{
+    width: auto;
+    height: 200px;
+    border-bottom: solid;
+    padding-left: 5px;
+}
+
+.chatApp .chatAppChatroom{
+    padding: 10px;
+}
+
+.chatApp .chatAppChatroom .inputBox{
+    padding: 10px;
+    margin: 5px;
+}
+
+.chatApp .chatAppChatroom .chatRoomSend{
+    padding: 5px;
+}
+.chatApp .chatAppChatroom .clearChatBox{
+    padding: 5px;
+}
+
+.chat-container .online-users{
+    border:solid;
+    height: auto; 
+}
+
+.chat-container .online-users .heading-box{
+    display: flex;
+    border-bottom: solid;
+    padding: 5px;
+}
+
+.chat-container .online-users .heading-box .room-heading{
+    align-items: center;
+    font-weight: 500;
+}
+
+.chat-container .online-users .room-users .list-users{
+    list-style: none;
+    margin-right: 20px;
 }

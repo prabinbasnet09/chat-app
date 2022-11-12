@@ -38,7 +38,13 @@ function getUser(id){
 }
 
 function roomUsers(room){
+    const onlineRoomUsers = users.filter(userInfo => userInfo.currentRoom === room)
 
+    return onlineRoomUsers
 }
 
-module.exports = {newUser, getUser}
+function getAllUsers(){
+    return users;
+}
+
+module.exports = {newUser, getUser, roomUsers, getAllUsers}
