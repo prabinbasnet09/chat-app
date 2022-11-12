@@ -1,10 +1,8 @@
+require('dotenv').config()
 const express = require('express')
-const { unwatchFile } = require('fs')
 const http = require('http')
 const path = require('path')
-const url = require('url')
-const base64id = require('base64id')
-
+const axios = require('axios')
 const socket = require('socket.io')
 const utils = require('../client/utils/users.cjs')
 
@@ -15,6 +13,14 @@ const io = socket(httpServer)
 let username = ""
 let room = ""
 let g_password = ""
+
+const backendURL = "https://82ijr18r2m.execute-api.us-east-1.amazonaws.com/prod/login";
+
+const requestConfig = {
+    headers: {
+        'x-api-key': process.env.API_KEY
+    }
+}
 
 app.use(express.static(path.join(__dirname, '../client/public')))
 app.use(express.static(path.join(__dirname, '../client/utils')))
@@ -27,19 +33,32 @@ app.post('/rooms.html', (req, res) => {
 
 app.post('/chatRoom.html', (req, res) => {
     //user authentication
-    res.status(200).redirect('chatRoom.html')
     username =  req.body.username;
     room = req.body.roomName;
     g_password = req.body.group_password;
+
+    const requestBody = {
+        group_name: room,
+        group_password: g_password
+    }
+    axios.post(backendURL, requestBody, requestConfig).then(response => {
+        res.status(200).redirect('chatRoom.html')
+    }).catch(error => {
+        if(error.response.status === 403){
+            res.redirect('/index.html')
+        }
+        console.log(error)
+    })
 })
 
 
 io.on('connection', (socket) => {
-
     socket.emit("new-user", username, room, () => {
-        const user = utils.newUser(socket.id, username, room)
-        // utils.getUsers()
+        utils.newUser(socket.id, username, room)
         socket.join(room)
+        const roomUsers = utils.roomUsers(room);
+        socket.emit('currentRoomUsers', roomUsers.length)
+        socket.emit('displayCurrentRoomUsers', roomUsers)
     })
 
     socket.on("send-message", (message) => { 
@@ -53,16 +72,6 @@ io.on('connection', (socket) => {
         cb(`You joined ${roomName}`)
     })  
 })
-
-//override io.engine.generateId
-// io.engine.generateId = req => {
-//     const parsedUrl = new url.parse(req.url)
-//     const prevId = parsedUrl.searchParams.get('socketId')
-//     if(prevId){
-//         return prevId
-//     }
-//     return base64id.generateId()
-// }
 
 httpServer.listen(3000, () => {
     console.log('Server running on port 3000')
