@@ -5,6 +5,7 @@ const path = require('path')
 const axios = require('axios')
 const socket = require('socket.io')
 const utils = require('../client/utils/users.cjs')
+const format = require('../client/utils/format.cjs')
 
 const app = express()
 const httpServer = http.createServer(app);
@@ -37,6 +38,7 @@ app.post('/chatRoom.html', (req, res) => {
     room = req.body.roomName;
     g_password = req.body.group_password;
 
+
     const requestBody = {
         group_name: room,
         group_password: g_password
@@ -57,13 +59,23 @@ io.on('connection', (socket) => {
         utils.newUser(socket.id, username, room)
         socket.join(room)
         const roomUsers = utils.roomUsers(room);
-        socket.emit('currentRoomUsers', roomUsers.length)
-        socket.emit('displayCurrentRoomUsers', roomUsers)
+        io.to(room).emit('currentRoomUsers', roomUsers.length)
+        io.to(room).emit('displayCurrentRoomUsers', roomUsers)
+    })
+
+    socket.on("update-userList", (socketID) => {
+        const removedUser = utils.removeUser(socketID);
+        const room = removedUser.room[0]
+        socket.leave(room)
+        const roomUsers = utils.roomUsers(room);
+        io.to(room).emit('currentRoomUsers', roomUsers.length)
+        io.to(room).emit('displayCurrentRoomUsers', roomUsers)
     })
 
     socket.on("send-message", (message) => { 
         const user = utils.getUser(socket.id)
-        socket.to(user.currentRoom).emit("receive-message", message, room)
+        socket.to(user.currentRoom).emit("receive-message", format.formatMessage(user.username, message), room)
+        socket.emit("message-initiator", format.formatMessage(user.username, message), room)
     })
 
     socket.on("joinRoom", (roomName, cb) => {
