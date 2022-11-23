@@ -1,5 +1,3 @@
-// const users = require('./users')
-
 const socket = io()
 
 const messageBox = document.querySelector('.chatAppMessage')
@@ -14,19 +12,46 @@ document.querySelector(".chatRoomSend").addEventListener('click', (event)=> {
     event.preventDefault();
     const message = inputBox.value;
 
-    displayMessage(message)      //displays message on the sender side
-    
+    if(message === ""){
+        return 
+    }
     socket.emit("send-message", message)
 })
 
-function displayMessage(text){
-    const message = document.createElement('p');
-    message.textContent = text;
+document.querySelector(".leave").addEventListener('click', (event) => {
+    socket.emit('update-userList', socket.id)
+})
 
-    messageBox.appendChild(message);
+//display message on the sender side
+function senderMessage(text){
+    const messageContainer = document.createElement('div')
+    messageContainer.className = "messageContainer";
+
+    const message = document.createElement('div');
+    
+    message.textContent = text;
+    message.className = "sender";
+
+    messageContainer.appendChild(message)
+    messageBox.appendChild(messageContainer);
     inputBox.value = ""
 }
 
+//display message on the receiver side
+function displayMessage(text){
+    const messageContainer = document.createElement('div')
+    const message = document.createElement('div');
+    messageContainer.className = "messageContainer";
+
+    message.textContent = text;
+    message.className = "receiver";
+
+    messageContainer.appendChild(message)
+    messageBox.appendChild(messageContainer);
+    inputBox.value = ""
+}
+
+//chat-box heading
 function displayChatBoxName(room){
     const heading = document.createElement('p');
     heading.textContent = room;
@@ -34,10 +59,12 @@ function displayChatBoxName(room){
     document.querySelector('.chatBoxName').appendChild(heading);
 }
 
+//display room users count
 function displayUsersCount(usersCount){
     document.querySelector('.users-count').textContent = usersCount
 }
 
+//display each users of a room 
 function displayRoomUsers(roomUsers){
     const usersList = document.createElement('ul');
     usersList.className = "list-users";
@@ -48,9 +75,18 @@ function displayRoomUsers(roomUsers){
         usersList.appendChild(listItem)
     });
 
-    document.querySelector('.room-users').appendChild(usersList)
+    const onlineUsers = document.querySelector('.room-users');
+
+    if(onlineUsers.children.length <= 0){
+        onlineUsers.appendChild(usersList)
+    }
+    else{
+        const oldChild = document.querySelector('.list-users')
+        onlineUsers.replaceChild(usersList, oldChild)
+    }
 }
 
+// throw password error message
 function displayPasswordError(message){
     const errorMessage = document.createElement('p');
     errorMessage.textContent = message;
@@ -65,9 +101,12 @@ socket.on("new-user", (username, room, cb) => {
 })
 
 socket.on("receive-message", (message => {
-    displayMessage(message)
+    displayMessage(`${message.username}: ${message.message} ${message.time}`)
 }))
 
+socket.on("message-initiator", (message) => {
+    senderMessage(`${message.message} ${message.time}`)
+})
 socket.on("disconnect", () => {
     console.log("Disconnected")
 })

@@ -27,9 +27,32 @@
 
 .chatApp .chatAppMessage{
     width: auto;
-    height: 200px;
+    display: block;
+    height: 400px;
+    max-height: 400px;
+    overflow-y: auto;
     border-bottom: solid;
-    padding-left: 5px;
+}
+.chatApp .chatAppMessage .messageContainer{
+    border: solid darkblue;
+    overflow: auto;
+}
+
+.chatApp .chatAppMessage .messageContainer .sender{
+    float: right;
+    width: fit-content;
+    border: solid red;
+    padding: 5px 10px;
+    margin: 0 0 15px 0;
+    border-radius: 10px;
+}
+
+.chatApp .chatAppMessage .messageContainer .receiver{
+    width: fit-content;
+    border: solid green;
+    padding: 5px 10px;
+    margin: 5px;
+    border-radius: 10px;
 }
 
 .chatApp .chatAppChatroom{
@@ -38,14 +61,14 @@
 
 .chatApp .chatAppChatroom .inputBox{
     padding: 10px;
-    margin: 5px;
+    margin: 25px;
 }
 
 .chatApp .chatAppChatroom .chatRoomSend{
-    padding: 5px;
+    padding: 25px;
 }
 .chatApp .chatAppChatroom .clearChatBox{
-    padding: 5px;
+    padding: 25px;
 }
 
 .chat-container .online-users{
@@ -56,7 +79,7 @@
 .chat-container .online-users .heading-box{
     display: flex;
     border-bottom: solid;
-    padding: 5px;
+    padding: 25px;
 }
 
 .chat-container .online-users .heading-box .room-heading{

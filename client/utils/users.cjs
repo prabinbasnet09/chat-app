@@ -47,4 +47,12 @@ function getAllUsers(){
     return users;
 }
 
-module.exports = {newUser, getUser, roomUsers, getAllUsers}
+function removeUser(id){
+    const index = users.findIndex(user => user.user_id === id)
+
+    if(index !== -1) {
+        return users.splice(index, 1)[0]
+    }
+}
+
+module.exports = {newUser, getUser, roomUsers, getAllUsers, removeUser}
