@@ -6,7 +6,7 @@ Realtime chat app built with websockets using Node.js, Express, and Socket.io wi
 
 1. Both on the client and server directories: `npm install` <br/>
 2. Create a DynamoDB database on AWS and a REST API to invoke Lambda
-3. Copy the backend code to your Lambda to perform backend functionalities
+3. Copy the backend code to your Lambda to perform backend functionalities: https://github.com/prabinbasnet09/chat-app-lambda
 4. Create an API key to securely access your REST API and store it in your _.env_ file
 5. Edit the database name to match your database name
 6. cd to server: `npm run dev` <br/>
