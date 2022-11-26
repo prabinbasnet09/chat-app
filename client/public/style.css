@@ -11,6 +11,8 @@
 
 .chat-container{
     display: flex;
+    min-height: 580px; 
+    position: relative;
 }
 
 .chatApp{
@@ -18,8 +20,28 @@
     border: solid;
 }
 
-.chatApp .chatBoxName{
-    border-bottom: solid;
+.chatApp .heading{
+    display: flexbox;
+    border-bottom: solid; 
+    position: relative;
+}
+
+.chatApp .heading .burger{
+    width:fit-content;
+    position: absolute;
+    top: -5px;
+    left: 15px;
+    padding: 7px;
+    background-color: black;
+    color: white;
+    cursor: pointer;
+}
+
+.chatApp .heading .burger.active{
+    visibility: hidden;
+}
+
+.chatApp .heading .chatBoxName{
     text-align: center;
     font-size: larger;
     font-weight: 600;
@@ -33,26 +55,57 @@
     overflow-y: auto;
     border-bottom: solid;
 }
+
+.chatApp .chatAppMessage .userStatus{
+    text-align: center;
+    font-size: medium;
+    color:rgb(124, 124, 124);
+    margin: 20px 0;
+}
+
 .chatApp .chatAppMessage .messageContainer{
-    border: solid darkblue;
+    position: relative;
     overflow: auto;
 }
 
 .chatApp .chatAppMessage .messageContainer .sender{
-    float: right;
-    width: fit-content;
-    border: solid red;
-    padding: 5px 10px;
-    margin: 0 0 15px 0;
+    float:right;
+    width: 170px;
+    height: auto;
+    background: #007bff none repeat scroll 0 0;
+    color: white;
+    padding: 10px;
+    margin: 15px 5px 15px 0;
     border-radius: 10px;
+    overflow-wrap: break-word;
+}
+
+.chatApp .chatAppMessage .messageContainer .sender-subHead{
+    position:absolute;
+    font-size: smaller;
+    font-weight: lighter;
+    color: rgb(121, 121, 121);
+    right: 27%;
+    bottom: 0px;
 }
 
 .chatApp .chatAppMessage .messageContainer .receiver{
-    width: fit-content;
-    border: solid green;
-    padding: 5px 10px;
-    margin: 5px;
+    width: 170px;
+    background: #e2e2e2 none repeat scroll 0 0;
+    padding: 10px;
+    margin: 0 0 15px 5px;
     border-radius: 10px;
+    margin-top: 15px;
+}
+
+.chatApp .chatAppMessage .messageContainer .receiver-subHead{
+    position:absolute;
+    font-size: smaller;
+    font-weight: lighter;
+    color: rgb(121, 121, 121);
+    left: 11px;
+    bottom: 0px;
+    /* margin-bottom: 10px; */
 }
 
 .chatApp .chatAppChatroom{
@@ -72,22 +125,67 @@
 }
 
 .chat-container .online-users{
-    border:solid;
-    height: auto; 
+    visibility: hidden;
+    border: solid;
+    height: 575px; 
+    top: 0px;
+    position: absolute;
+}
+
+.chat-container .online-users.active{
+    visibility: visible;
+    z-index: 1;
+    background: pink no-repeat;
+}
+
+@media screen and (max-width: 460px){
+    .chat-container .online-users{
+        height: 645px;
+    }
 }
 
 .chat-container .online-users .heading-box{
     display: flex;
     border-bottom: solid;
-    padding: 25px;
+    padding: 5px 5px 6px 5px;
+    font-weight: bold;
 }
 
 .chat-container .online-users .heading-box .room-heading{
     align-items: center;
-    font-weight: 500;
 }
 
 .chat-container .online-users .room-users .list-users{
     list-style: none;
-    margin-right: 20px;
+    padding: 0px;
+    margin: 20px 0;
+    text-align: center;
+    
+}
+
+.chat-container .online-users .room-users .list-users .userName{
+    margin: 5px 0;
+    padding: 5px 0;
+    color: rgb(0, 212, 0);
+    background: #000000;
+}
+
+.chat-container .online-users .leave-group{
+    margin-top: 10px;
+    text-align: center;
+}
+
+.chat-container .online-users .leave-group .leave{
+    cursor: pointer;
+    padding: 5px;
+}
+
+.chat-container .online-users .closeNav{
+    margin-top: 50px;
+    text-align: center;
+}
+
+.chat-container .online-users .closeNav .close-btn{
+    cursor: pointer;
+    padding: 5px 25px;
 }

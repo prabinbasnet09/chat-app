@@ -7,12 +7,17 @@
     <link rel="stylesheet" href="./style.css">
     <title>GoreyDon Club</title>
     <script src = "./script.js" defer></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
 <body>
     <div class = "chat-container">
         <div class = "chatApp">
-            <div class = "chatBoxName"></div>
-
+            <div class = "heading">
+                <div class = "burger">
+                    <i class="fa fa-bars "></i>
+                </div>
+                <div class = "chatBoxName"></div>
+            </div>
             <div class = "chatAppMessage"></div>
 
             <form class = "chatAppChatroom">
@@ -35,8 +40,12 @@
             </div>
             <div class="room-users"></div>
 
+            <div class="closeNav">
+                <button class = "close-btn">Close</button>
+            </div>
+
             <div class = "leave-group">
-                <a href="index.html"><button class = "leave">Leave Group</button></a>
+                <a href=""><button class = "leave">Leave Group</button></a>
             </div>
         </div>
     </div>

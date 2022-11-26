@@ -1,11 +1,31 @@
 const socket = io()
 
+const burger = document.querySelector('.burger');
+
+burger.addEventListener("click", navToogle);
+
+function navToogle(event){
+    event.preventDefault();
+    document.querySelector('.online-users').classList.toggle("active");
+    burger.classList.toggle("active");
+}
+
+document.querySelector('.close-btn').addEventListener('click', (event) => {
+    event.preventDefault();
+    document.querySelector('.online-users').classList.toggle("active");
+    burger.classList.toggle("active");
+})
 const messageBox = document.querySelector('.chatAppMessage')
 const inputBox = document.querySelector('.inputBox')
 
 document.querySelector('.clearChatBox').addEventListener('click', (event)=> {
     event.preventDefault();
-    messageBox.innerHTML = ""
+    let clearAll = confirm("Are you sure you want to clear all chat messages?");
+    if(clearAll){
+        messageBox.innerHTML = ""
+    } else{
+        return
+    }
 })
 
 document.querySelector(".chatRoomSend").addEventListener('click', (event)=> {
@@ -19,36 +39,59 @@ document.querySelector(".chatRoomSend").addEventListener('click', (event)=> {
 })
 
 document.querySelector(".leave").addEventListener('click', (event) => {
-    socket.emit('update-userList', socket.id)
+    let leaveGroup = confirm("Are you sure you want to leave the chat?");
+    
+    if(leaveGroup){
+        socket.emit('update-userList', socket.id)
+        document.getElementsByTagName('a')[0].href = "index.html";
+    } 
+    else{
+        document.querySelector('.online-users').classList.toggle("active");
+        burger.classList.toggle("active")
+        event.preventDefault();
+    }
 })
 
-//display message on the sender side
-function senderMessage(text){
-    const messageContainer = document.createElement('div')
-    messageContainer.className = "messageContainer";
+//server message
+function JoinAndLeave(username, status){
+    const userStatus = document.createElement('div');
+    userStatus.className = "userStatus"
 
-    const message = document.createElement('div');
-    
-    message.textContent = text;
-    message.className = "sender";
+    if(status === "join")
+        userStatus.textContent = `${username} has joined the chat!`
+    else
+        userStatus.textContent = `${username} has left the chat!`
 
-    messageContainer.appendChild(message)
-    messageBox.appendChild(messageContainer);
-    inputBox.value = ""
+    messageBox.appendChild(userStatus)
+    messageBox.scrollTop = messageBox.scrollHeight;
 }
 
-//display message on the receiver side
-function displayMessage(text){
+//display message 
+function displayMessage(message, messageCondition){
     const messageContainer = document.createElement('div')
-    const message = document.createElement('div');
     messageContainer.className = "messageContainer";
 
-    message.textContent = text;
-    message.className = "receiver";
+    const messageContent = document.createElement('div');
+    const messageSubContent = document.createElement('span');
 
-    messageContainer.appendChild(message)
+    if(messageCondition === "incoming"){    
+        messageContent.textContent = `${message.message}`;
+        messageSubContent.textContent = `${message.username} | ${message.time}`;
+        
+        messageContent.className = "receiver";
+        messageSubContent.className = "receiver-subHead";
+    } else{
+        messageContent.textContent = `${message.message}`;
+        messageSubContent.textContent = `You | ${message.time}`
+
+        messageContent.className = "sender";
+        messageSubContent.className = "sender-subHead";
+    }
+
+    messageContainer.append(messageContent, messageSubContent)
     messageBox.appendChild(messageContainer);
     inputBox.value = ""
+    messageBox.scrollTop = messageBox.scrollHeight;
 }
 
 //chat-box heading
@@ -72,6 +115,7 @@ function displayRoomUsers(roomUsers){
     roomUsers.forEach(user => {
         const listItem = document.createElement('li');
         listItem.innerHTML = user.username;
+        listItem.className = "userName";
         usersList.appendChild(listItem)
     });
 
@@ -95,30 +139,22 @@ function displayPasswordError(message){
 }
 
 socket.on("new-user", (username, room, cb) => {
-    displayMessage(`Welcome ${username} to ${room}`)
     displayChatBoxName(room)
     cb()
 })
 
-socket.on("receive-message", (message => {
-    displayMessage(`${message.username}: ${message.message} ${message.time}`)
-}))
+socket.on('user-join', (username) => JoinAndLeave(username, "join"))
 
-socket.on("message-initiator", (message) => {
-    senderMessage(`${message.message} ${message.time}`)
-})
-socket.on("disconnect", () => {
-    console.log("Disconnected")
-})
+socket.on("receive-message", (message => displayMessage(message, "incoming")))
 
-socket.on('currentRoomUsers', (usersCount) => {
-    displayUsersCount(usersCount)
-})
+socket.on("message-initiator", (message) => displayMessage(message, "outgoing"))
 
-socket.on('displayCurrentRoomUsers', (roomUsers) => {
-    displayRoomUsers(roomUsers)
-})
+socket.on("disconnect", () => console.log("Disconnected"))
 
-socket.on('incorrect-password', errMsg => {
-    displayPasswordError(errMsg);
-})
+socket.on('currentRoomUsers', (usersCount) => displayUsersCount(usersCount))
+
+socket.on('displayCurrentRoomUsers', (roomUsers) => displayRoomUsers(roomUsers))
+
+socket.on('incorrect-password', errMsg => displayPasswordError(errMsg))
+
+socket.on('user-left', (username) => JoinAndLeave(username, "left"))

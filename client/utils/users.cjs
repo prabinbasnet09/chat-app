@@ -1,4 +1,16 @@
 const users = []
+const express = require('express')
+const app = express()
+const axios = require('axios')
+
+const userAddURL = "https://82ijr18r2m.execute-api.us-east-1.amazonaws.com/prod/useradd";
+const userRemoveURL = "https://82ijr18r2m.execute-api.us-east-1.amazonaws.com/prod/userremove";
+
+const requestConfig = {
+    headers: {
+        'x-api-key': process.env.API_KEY
+    }
+}
 
 function newUser(id, user_name, room_name){
 
@@ -25,6 +37,19 @@ function newUser(id, user_name, room_name){
         currentRoom: room_name
     }
     users.push(user)
+
+    const requestBody = {
+        user_id: user.user_id,
+        username: user.username,
+        room: user.currentRoom
+    }
+
+    axios.post(userAddURL, requestBody, requestConfig).then(response => {
+        return 
+    }).catch(error => {
+        console.log(error)
+    })
+
     return user
 }
 
@@ -51,8 +76,29 @@ function removeUser(id){
     const index = users.findIndex(user => user.user_id === id)
 
     if(index !== -1) {
-        return users.splice(index, 1)[0]
+        const deletedUser = users.splice(index, 1)[0]
+
+        const requestBody = {
+            user_id: deletedUser.user_id,
+            username: deletedUser.username,
+            room: deletedUser.currentRoom
+        }
+
+        axios.delete(userRemoveURL, requestBody, requestConfig).then(response => {
+            return
+        }, error => {
+            console.log(error)
+        })
+
+        return deletedUser
     }
 }
 
-module.exports = {newUser, getUser, roomUsers, getAllUsers, removeUser}
+function checkUser(username){
+    return users.find((userInfo) => {
+        if(userInfo.username===username) 
+            return userInfo
+    })
+}
+
+module.exports = {newUser, getUser, roomUsers, getAllUsers, removeUser, checkUser}

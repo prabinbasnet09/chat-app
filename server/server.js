@@ -28,29 +28,30 @@ app.use(express.static(path.join(__dirname, '../client/utils')))
 
 app.use(express.urlencoded({extended: false}))
 
-app.post('/rooms.html', (req, res) => {
-    res.status(200).redirect('rooms.html')
-})
-
 app.post('/chatRoom.html', (req, res) => {
     //user authentication
     username =  req.body.username;
     room = req.body.roomName;
     g_password = req.body.group_password;
 
-
-    const requestBody = {
-        group_name: room,
-        group_password: g_password
+    if(utils.checkUser(username)){
+        res.status(403).redirect('index.html')
     }
-    axios.post(backendURL, requestBody, requestConfig).then(response => {
-        res.status(200).redirect('chatRoom.html')
-    }).catch(error => {
-        if(error.response.status === 403){
-            res.redirect('/index.html')
+    else{
+
+        const requestBody = {
+            group_name: room,
+            group_password: g_password
         }
-        console.log(error)
-    })
+        axios.post(backendURL, requestBody, requestConfig).then(response => {
+            res.status(200).redirect('chatRoom.html')
+        }).catch(error => {
+            if(error.response.status === 403){
+                res.redirect('/index.html')
+            }
+            console.log(error)
+        })
+    }
 })
 
 
@@ -58,6 +59,7 @@ io.on('connection', (socket) => {
     socket.emit("new-user", username, room, () => {
         utils.newUser(socket.id, username, room)
         socket.join(room)
+        io.to(room).emit("user-join", username)
         const roomUsers = utils.roomUsers(room);
         io.to(room).emit('currentRoomUsers', roomUsers.length)
         io.to(room).emit('displayCurrentRoomUsers', roomUsers)
@@ -70,6 +72,7 @@ io.on('connection', (socket) => {
         const roomUsers = utils.roomUsers(room);
         io.to(room).emit('currentRoomUsers', roomUsers.length)
         io.to(room).emit('displayCurrentRoomUsers', roomUsers)
+        io.to(room).emit('user-left', removedUser.username)
     })
 
     socket.on("send-message", (message) => { 
@@ -77,12 +80,6 @@ io.on('connection', (socket) => {
         socket.to(user.currentRoom).emit("receive-message", format.formatMessage(user.username, message), room)
         socket.emit("message-initiator", format.formatMessage(user.username, message), room)
     })
-
-    socket.on("joinRoom", (roomName, cb) => {
-        if(socket.rooms.has(roomName)) return 
-        socket.join(roomName)
-        cb(`You joined ${roomName}`)
-    })  
 })
 
 httpServer.listen(3000, () => {
