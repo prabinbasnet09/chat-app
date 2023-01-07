@@ -1,5 +1,7 @@
 # Web ChatApp
 
+![Chat Application](client/images/chat_app.png)
+
 Realtime chat app built with websockets using Node.js, Express, and Socket.io with vanilla JavaScript. Includes login and authentication using AWS REST API, DynamoDB, and Lambda. HTML, CSS, and JavaScript for the front-end.
 
 ## Usage
